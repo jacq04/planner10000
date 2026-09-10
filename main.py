@@ -1,6 +1,16 @@
-def main():
-    print("Hello from planner!")
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+
+from backend.routes import router
+from db.database import create_db_and_tables
 
 
-if __name__ == "__main__":
-    main()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(router)
